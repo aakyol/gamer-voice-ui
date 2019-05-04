@@ -1,5 +1,6 @@
 package aa.apps.service;
 
+import aa.apps.resource.AppConstants;
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.ServiceAccountCredentials;
@@ -33,7 +34,7 @@ public class SpeechService {
             SpeechClient speechClient = SpeechClient.create(settings);
 
 
-            String fileName = "listener/rec.wav";
+            String fileName = AppConstants.MIC_FILENAME;
 
             // Reads the audio file into memory
             Path path = Paths.get(fileName);
