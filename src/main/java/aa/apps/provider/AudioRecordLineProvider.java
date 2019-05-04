@@ -7,13 +7,15 @@ public class AudioRecordLineProvider {
 
     private static Logger LOG = Logger.getLogger(AudioRecordLineProvider.class.getName());
 
-    public static TargetDataLine provideAudioLine(final float sampleBitRate) {
+    public static TargetDataLine provideAudioLine() {
         AudioFormat format = new AudioFormat(
-                sampleBitRate,
-                8,
-                1,
-                true,
-                true
+                AudioFormat.Encoding.PCM_SIGNED,
+                44100,
+                16,
+                2,
+                4,
+                44100,
+                false
         );
 
         TargetDataLine line = null;

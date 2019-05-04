@@ -39,3 +39,6 @@ buildNumber.properties
 
 # GCP
 gcp-files/
+
+# Audio Files
+*.wav

@@ -18,8 +18,8 @@ public class SpeechService {
 
     private static Logger LOG = Logger.getLogger(SpeechService.class.getName());
 
-    public static List<SpeechRecognitionResult> speechToText(
-            final int sampleBitRate) {
+    public static String speechToText() {
+        StringBuilder resultsStringBuilder = new StringBuilder();
         try {
             CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(
                     ServiceAccountCredentials.fromStream(
@@ -33,7 +33,7 @@ public class SpeechService {
             SpeechClient speechClient = SpeechClient.create(settings);
 
 
-            String fileName = "rec.wav";
+            String fileName = "listener/rec.wav";
 
             // Reads the audio file into memory
             Path path = Paths.get(fileName);
@@ -42,7 +42,8 @@ public class SpeechService {
 
             RecognitionConfig config = RecognitionConfig.newBuilder()
                     .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                    .setSampleRateHertz(sampleBitRate)
+                    .setAudioChannelCount(2)
+                    .setSampleRateHertz(44100)
                     .setLanguageCode("en-UK")
                     .build();
             RecognitionAudio audio = RecognitionAudio.newBuilder()
@@ -50,13 +51,15 @@ public class SpeechService {
                     .build();
 
             RecognizeResponse response = speechClient.recognize(config, audio);
+            speechClient.close();
             List<SpeechRecognitionResult> results = response.getResultsList();
 
             for (SpeechRecognitionResult result : results) {
                 SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
-                LOG.info("Transcription: " + alternative.getTranscript());
+                resultsStringBuilder.append(alternative.getTranscript() + " ");
+                LOG.info("Detected speech pattern: " + alternative.getTranscript());
             }
-            return results;
+            return resultsStringBuilder.toString();
         } catch (IOException ioEx) {
             LOG.severe("IOException thrown during SpeechClient creation.");
             return null;

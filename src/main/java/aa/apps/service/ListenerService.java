@@ -1,9 +1,9 @@
 package aa.apps.service;
 
+import aa.apps.audio.CustomAudioInputStream;
 import aa.apps.provider.AudioRecordLineProvider;
 
 import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.TargetDataLine;
 import java.io.File;
@@ -22,7 +22,7 @@ public class ListenerService {
         if(Objects.isNull(mainThread) ) {
             mainThread = new Thread(() -> { //Might throw InterruptedException
 
-                TargetDataLine line = AudioRecordLineProvider.provideAudioLine(48000f);
+                TargetDataLine line = AudioRecordLineProvider.provideAudioLine();
 
                 if(Objects.nonNull(line)) {
 
@@ -30,10 +30,13 @@ public class ListenerService {
 
                     while (!mainThread.currentThread().isInterrupted()) {
                         try {
-                            File recorded = new File("rec.wav");
-                            AudioInputStream ais = new AudioInputStream(line);
+                            File recorded = new File("listener/rec.wav");
+                            CustomAudioInputStream ais = new CustomAudioInputStream(line);
+                            ais.setLength(44100 * 3);
                             AudioSystem.write(ais, AudioFileFormat.Type.WAVE, recorded);
-                            SpeechService.speechToText(48000);
+                            if(SpeechService.speechToText().contains("friday")) {
+                                LOG.info("Callsign detected.");
+                            }
                             recorded.delete();
                         } catch (IOException ioEx) {
                             LOG.severe("IOException during recording microphone.");
